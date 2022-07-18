@@ -29,7 +29,10 @@ $app->get('/', function () use ($imageConfig) {
     $imageContent = file_get_contents($image);
 
     return $this->response
-        ->withHeader('Content-Type', 'webp')
+        ->withHeaders([
+            'Access-Control-Allow-Origin' => '*',
+            'Content-Type' => 'webp',
+        ])
         ->withBody(new SwooleStream($imageContent));
 });
 
