@@ -9,23 +9,20 @@ require_once __DIR__ . '/vendor/autoload.php';
 $dotenv = Dotenv::createUnsafeImmutable(__DIR__);
 $dotenv->load();
 
-$appConfig = [
+$config = [
     'host' => env('APP_HOST', '0.0.0.0'),
     'port' => (int)env('APP_PORT', 9501),
 ];
 
-$imageConfig = [
-    'max' => (int)env('MAX_IMAGES', 0),
-];
+$app = AppFactory::create(...$config);
 
-$app = AppFactory::create(...$appConfig);
-
-$app->get('/', function () use ($imageConfig) {
-    if ($imageConfig['max'] === 0) {
+$app->get('/', function () {
+    $maxImages = (int)env('MAX_IMAGES', 0);
+    if ($maxImages === 0) {
         return $this->response->json(['message' => 'You must need some images.']);
     }
 
-    $image = BASE_PATH . '/images/' . mt_rand(0, $imageConfig['max']) . '.webp';
+    $image = BASE_PATH . '/images/' . mt_rand(0, $maxImages) . '.webp';
     $imageContent = file_get_contents($image);
 
     return $this->response
